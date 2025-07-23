@@ -13,6 +13,7 @@
     <script type="text/babel">
         const { createRoot, createPortal } = ReactDOM;
         const { useState } = React;
+        const API = 'http://localhost:3333/animals?search=';
 
         function Modal({
             title,
@@ -53,6 +54,20 @@
             )
         }
 
+        const Card = ({ animal }) => {
+            const { name, description, image } = animal;
+
+            return (
+                <div className='card'>
+                    <img src='https://picsum.photos/400/300' alt={name} className="card-image" />
+                    <div className="card-content">
+                        <h3>{name}</h3>
+                        <p>{description}</p>
+                    </div>
+                </div>
+            )
+        }
+
         const Animals = () => {
 
             const animalsChoices = [
@@ -89,14 +104,31 @@
                 setShow(true);
             }
 
-            function onConfirm() {
-                const term = animalsChoices.find(animal => search.toLowerCase().trim() === animal.toLowerCase());
-                if (!term) {
-                    console.error(`Elemento non presente`);
+            async function fetchJson(url) {
+                try {
+                    const res = await fetch(url);
+                    return await res.json();
+                } catch (e) {
+                    console.error(`Errore durante la ricerca dell'animale:\n`, e)
+                }
+            }
+
+            async function onConfirm() {
+                setSuccess(false);
+                setError(false);
+
+                let message = 'Elemento non presente';
+
+                const term = await fetchJson(`${API}${search}`);
+
+                if (!term) message = `Errore durante la ricerca dell'animale`
+
+                if (!term || term.length === 0) {
+                    console.error(message);
                     setError(true)
                     setSearch('');
                 } else {
-                    animalsArray.push(term);
+                    animalsArray.push(term[0]);
                     setSuccess(true);
                     setSearch('');
                     setTimeout(() => onClose(), 2000)
@@ -124,7 +156,9 @@
                         </summary>
                         <ul>
                             {animalsArray.map((animal, i) => (
-                                <li key={i}>{animal}</li>
+                                <li key={i}>
+                                    <Card animal={animal} />
+                                </li>
                             )
                             )}
                         </ul>

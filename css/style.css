@@ -70,3 +70,20 @@ details h2 {
 .error {
     color: red;
 }
+
+.card {
+    width: 300px;
+    background-color: #c7c7c7;
+}
+
+.card-image {
+    width: 100%;
+}
+
+.card-content {
+    padding: 10px 5px;
+}
+
+.card-content>* {
+    margin-bottom: 10px;
+}
