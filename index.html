@@ -11,8 +11,47 @@
     <link rel="stylesheet" href="./css/style.css">
 
     <script type="text/babel">
-        const { createRoot } = ReactDOM;
+        const { createRoot, createPortal } = ReactDOM;
         const { useState } = React;
+
+        function Modal({
+            title,
+            content,
+            show = false,
+            search,
+            setSearch,
+            onClose = () => { },
+            onConfirm = () => { },
+            success = false,
+            error = false
+        }) {
+            return show && createPortal(
+                <div className="modal-container">
+                    <div className="modal">
+                        <h2>{title}</h2>
+                        <input
+                            type="text"
+                            placeholder="Cerca..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                        <button onClick={onConfirm}>Conferma</button>
+                        <button onClick={onClose}>Annulla</button>
+                        {success &&
+                            <div>
+                                <span className='success'>Elemento aggiunto alla lista</span>
+                            </div>
+                        }
+                        {error &&
+                            <div>
+                                <span className='error'>Elemento non trovato</span>
+                            </div>
+                        }
+                    </div>
+                </div>,
+                document.body
+            )
+        }
 
         const Animals = () => {
 
@@ -29,24 +68,63 @@
             ];
 
             const [animalsArray, setAnimalsArray] = useState([]);
+            const [show, setShow] = useState(false);
+            const [search, setSearch] = useState(``);
+            const [success, setSuccess] = useState(false);
+            const [error, setError] = useState(false)
 
             function addAnimal() {
                 const randomIndex = Math.floor(Math.random() * animalsChoices.length);
                 setAnimalsArray([...animalsArray, animalsChoices[randomIndex]]);
             }
 
+            function onClose() {
+                setShow(false);
+                setSuccess(false);
+                setError(false);
+                setSearch('');
+            }
+
+            function onOpen() {
+                setShow(true);
+            }
+
+            function onConfirm() {
+                const term = animalsChoices.find(animal => search.toLowerCase().trim() === animal.toLowerCase());
+                if (!term) {
+                    console.error(`Elemento non presente`);
+                    setError(true)
+                    setSearch('');
+                } else {
+                    animalsArray.push(term);
+                    setSuccess(true);
+                    setSearch('');
+                    setTimeout(() => onClose(), 2000)
+                }
+            }
+
             return (
                 <>
-                    <button onClick={addAnimal}>
-                        Aggiungi
+                    <button onClick={onOpen}>
+                        Aggiungi un animale!!!
                     </button>
+                    <Modal
+                        title={`Cerca l'animale da aggiungere`}
+                        show={show}
+                        onClose={onClose}
+                        onConfirm={onConfirm}
+                        search={search}
+                        setSearch={setSearch}
+                        success={success}
+                        error={error}
+                    />
                     <details>
                         <summary>
                             <h2>Animali</h2>
                         </summary>
                         <ul>
-                            {animalsArray.map(animal => (
-                                <li>{animal}</li>
+                            {animalsArray.map((animal, i) => (
+                                <li key={i}>{animal}</li>
                             )
                             )}
                         </ul>
