@@ -20,7 +20,12 @@ const Animals = () => {
     const [show, setShow] = useState(false);
     const [search, setSearch] = useState(``);
     const [success, setSuccess] = useState(false);
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(
+        {
+            status: false,
+            message: ''
+        }
+    )
 
     function addAnimal() {
         const randomIndex = Math.floor(Math.random() * animalsChoices.length);
@@ -30,7 +35,10 @@ const Animals = () => {
     function onClose() {
         setShow(false);
         setSuccess(false);
-        setError(false);
+        setError({
+            ...error,
+            status: false
+        });
         setSearch('');
     }
 
@@ -49,7 +57,10 @@ const Animals = () => {
 
     async function onConfirm() {
         setSuccess(false);
-        setError(false);
+        setError({
+            ...error,
+            status: false
+        });
 
         let message = 'Elemento non presente';
 
@@ -59,7 +70,10 @@ const Animals = () => {
 
         if (!term || term.length === 0) {
             console.error(message);
-            setError(true)
+            setError({
+                status: true,
+                message
+            })
             setSearch('');
         } else {
             animalsArray.push(term[0]);
