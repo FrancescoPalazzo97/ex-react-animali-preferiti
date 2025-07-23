@@ -12,10 +12,11 @@
 
     <script type="text/babel">
         const { createRoot } = ReactDOM;
+        const { useState } = React;
 
         const Animals = () => {
 
-            const animalsArray = [
+            const animalsChoices = [
                 'Gatto',
                 'Cane',
                 'Scimmia',
@@ -27,18 +28,30 @@
                 'Volpe'
             ];
 
+            const [animalsArray, setAnimalsArray] = useState([]);
+
+            function addAnimal() {
+                const randomIndex = Math.floor(Math.random() * animalsChoices.length);
+                setAnimalsArray([...animalsArray, animalsChoices[randomIndex]]);
+            }
+
             return (
-                <details>
-                    <summary>
-                        <h2>Animali</h2>
-                    </summary>
-                    <ul>
-                        {animalsArray.map(animal => (
-                            <li>{animal}</li>
-                        )
-                        )}
-                    </ul>
-                </details>
+                <>
+                    <button onClick={addAnimal}>
+                        Aggiungi
+                    </button>
+                    <details>
+                        <summary>
+                            <h2>Animali</h2>
+                        </summary>
+                        <ul>
+                            {animalsArray.map(animal => (
+                                <li>{animal}</li>
+                            )
+                            )}
+                        </ul>
+                    </details>
+                </>
             )
         }
 
