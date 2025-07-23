@@ -28,9 +28,9 @@ function Modal({
                         <span className='success'>Elemento aggiunto alla lista</span>
                     </div>
                 }
-                {error &&
+                {error.status &&
                     <div>
-                        <span className='error'>Elemento non trovato</span>
+                        <span className='error'>{error.message}</span>
                     </div>
                 }
             </div>
